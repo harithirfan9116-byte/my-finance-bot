@@ -5,7 +5,10 @@ from datetime import date
 
 # Lokasi database
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_NAME = os.path.join(BASE_DIR, "expenses.db")
+DB_NAME = os.getenv(
+    "DB_PATH",
+    os.path.join(BASE_DIR, "expenses.db")
+)
 
 
 def connect_db():
@@ -113,11 +116,8 @@ def get_monthly_report(user_id, year_month=None):
     conn = connect_db()
     cursor = conn.cursor()
 
-    # Calculate monthly income and expense
     cursor.execute("""
-        SELECT
-            transaction_type,
-            SUM(amount)
+        SELECT transaction_type, SUM(amount)
         FROM transactions
         WHERE user_id = ?
         AND date LIKE ?
